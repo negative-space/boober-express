@@ -1,0 +1,21 @@
+
+{% extends 'boober/base.html' %}
+
+{% block base_container %}
+    <div style="min-height: 300px;">
+
+        <h2><i class="fa fa-female"></i> {% _ 'Thank you!' %}</h2>
+
+        {% if ride.paid %}
+            {% _ 'THANK YOU!!!' %}
+        {% else %}
+            {% _ "No payment? Here's some boobs:" %}
+
+            <img src="/img/boobs-lead-2.jpg">
+        {% endif %}
+
+        <a href="{% url 'boober.driver_start' %}" class="btn btn-primary">
+            {% _ 'Start boobing again' %}</a>
+
+    </div>
+{% endblock %}

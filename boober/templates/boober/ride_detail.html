@@ -1,0 +1,92 @@
+{% extends 'boober/ride_base.html' %}
+
+{% load thumbnail %}
+
+{% block base_container %}
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #map {
+            min-height: 200px;
+            width: 100%;
+            margin-bottom: 35px;
+        }
+    </style>
+
+    <div>
+        <h2>{% _ 'Ride details' %}</h2>
+
+
+        <section style="margin-bottom: 20px;">
+            <div class="container">
+                <article class="uou-block-7f" style="padding: 20px; margin-bottom: 10px; background: white;">
+                    <img src="{% thumbnail ride.client.own_photo 250x250 crop upscale %}" alt="" class="thumb"
+                         style="width: 140px;">
+
+                    <h2><i class="fa fa-female"></i> {{ ride.client.name }} {{ ride.client.age }}
+                        (oo {{ ride.client.boobs_size }})</h2>
+
+                    <div class="meta">
+                        <span class="time-ago">{{ ride.date_created|date:'Y.m.d H:i' }}</span>
+                        <span class="category">{% _ 'Age:' %} {{ ride.client.age }} </span>
+                        <span class="category">{% _ 'Boobs size:' %} {{ ride.client.boobs_size }} </span>
+                    </div>
+                    <p>
+                        <b>{{ ride.pickup_address }}</b>
+                    </p>
+                </article>
+
+
+                <div id="map"></div>
+            </div>
+
+        </section>
+
+
+        <form action="" method="post"{% if form.is_multipart %}
+              enctype="multipart/form-data"{% endif %}>{% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" class="btn mb20 btn-lagre btn-primary" value="{{ 'Start ride'|_ }}"/>
+        </form>
+        <a href="{% url 'boober.open_rides_list' %}"
+           class="btn mb20 btn-small btn-transparent-primary">{% _ 'Cancel' %}</a>
+
+    </div>
+{% endblock %}
+
+
+{% block extra_script %}
+    <script>
+
+        function initMap() {
+            var map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: {{ ride.pickup_point_lat }}, lng: {{ ride.pickup_point_lon }}},
+                zoom: 15
+            });
+
+            var marker = new google.maps.Marker({
+                map: map,
+                dragable: true,
+                icon: {
+                    url: '/images/boob.svg',
+                    scaledSize: new google.maps.Size(50, 50)
+                },
+                animation: google.maps.Animation.DROP,
+                anchorPoint: new google.maps.Point(0, 0)
+            });
+
+            var newPoint = new google.maps.LatLng({{ ride.pickup_point_lat }}, {{ ride.pickup_point_lon }});
+
+            marker.setPosition(newPoint);
+
+        }
+
+
+    </script>
+
+
+
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyCYsyCtrprmQ43dsihT7ShSaGUCh-RTLrU&callback=initMap"
+            type="text/javascript"></script>
+{% endblock %}

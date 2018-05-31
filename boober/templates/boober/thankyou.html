@@ -1,0 +1,19 @@
+
+{% extends 'boober/base.html' %}
+
+{% block base_container %}
+    <div style="min-height: 300px;">
+
+    <h2><i class="fa fa-female"></i> {% _ 'Thank you!' %}</h2>
+
+    {% _ 'Thank you for you ride!' %}
+
+        <br>
+        <br>
+        <br>
+
+    <a href="{% url 'boober.client_start' %}" class="btn btn-primary">
+        {% _ 'Search new boober' %}</a>
+
+    </div>
+{% endblock %}

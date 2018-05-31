@@ -1,0 +1,46 @@
+{% extends 'boober/user_base.html' %}
+
+{% load thumbnail %}
+
+{% block base_container %}
+    <style>
+    .proposal:hover {
+        background-color: #cceaf5 !important;
+    }
+    </style>
+
+    <div class="compny-profile" id="auto-reload">
+
+        <h2><i class="fa fa-car"></i> {{ profile.name }} {{ profile.age }} -> {% _ 'Order list' %}</h2>
+
+        <section style="margin-bottom: 20px;">
+            <div class="container">
+                {% for ride in rides %}
+                    <a href="{% url 'boober.ride_detail' pk=ride.pk %}" class="uou-block-7f proposal"
+                       style="padding: 20px; margin-bottom: 10px; background: white;">
+
+                        <img src="{% thumbnail ride.client.own_photo 250x250 crop upscale %}" alt="" class="thumb"
+                             style="width: 140px;">
+
+                        <h2><i class="fa fa-female"></i> {{ ride.client.name }} {{ ride.client.age }}
+                            (oo {{ ride.client.boobs_size }})</h2>
+
+                        <div class="meta">
+                            <span class="time-ago">{{ ride.date_created|date:'Y.m.d H:i' }}</span>
+                            <span class="category">{% _ 'Age:' %} {{ ride.client.age }} </span>
+                            <span class="category">{% _ 'Boobs size:' %} {{ ride.client.boobs_size }} </span>
+                        </div>
+                        <p>
+                            <b>{{ ride.pickup_address }}</b>
+                        </p>
+                    </a>
+                    {% empty %}
+                    <p>
+                        {% _ 'Waiting for orders ...' %}
+                    </p>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+
+{% endblock %}

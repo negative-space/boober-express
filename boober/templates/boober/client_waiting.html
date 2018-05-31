@@ -1,0 +1,51 @@
+{% extends 'boober/ride_base.html' %}
+{% load thumbnail %}
+
+{% block base_container %}
+    <style>
+    .proposal:hover {
+        background-color: #cceaf5 !important;
+    }
+    </style>
+
+    <div id="auto-reload">
+        <h2><i class="fa fa-female"></i> {{ profile.name }} {{ profile.age }} (oo {{ profile.boobs_size }}) ->
+            {% _ 'Pick a car' %}
+        </h2>
+
+        <section style="margin-bottom: 20px;">
+            <div class="container">
+                {% for proposal in proposals %}
+                    <a href="{% url 'boober.client_proposal_accept' pk=ride.pk proposal=proposal.pk %}" class="uou-block-7f proposal" style="padding: 20px; margin-bottom: 10px; background: white;">
+
+                        <img src="{% thumbnail proposal.driver.car_photo 250x250 crop upscale %}" alt="" class="thumb" style="width: 150px; margin-right: 15px;">
+                        <img src="{% thumbnail proposal.driver.own_photo 250x250 crop upscale %}" alt="" class="thumb" style="width: 150px;">
+
+                        <h2><i class="fa fa-car"></i> {{ proposal.driver.name }} {{ proposal.driver.age }}
+                        ({{ proposal.driver.car_model }})</h2>
+
+                        <div class="meta">
+                            <span class="time-ago">{{ proposal.date_created|date:'Y.m.d H:i' }}</span>
+                            <span class="category">{% _ 'Age:' %} {{ proposal.driver.age }} </span>
+                            <span class="category">{% _ 'Car model:' %} {{ proposal.driver.car_model }} </span>
+                        </div>
+
+                        <p>
+                            {% if proposal.comment %}
+                                {% _ 'Note form driver:' %}
+                                <i>{{ proposal.comment }}</i>{% endif %}
+                        </p>
+                    </a>
+                {% empty %}
+                    <p>
+                        {% _ 'Waiting for proposals ...' %}
+                    </p>
+                {% endfor %}
+            </div>
+        </section>
+
+        <a href="{% url 'boober.client_cancel' pk=ride.pk %}"
+           class="btn mb20 btn-small btn-transparent-primary">{% _ 'Cancel' %}</a>
+    </div>
+{% endblock %}
+

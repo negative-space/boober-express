@@ -1,0 +1,45 @@
+{% extends 'boober/ride_base.html' %}
+
+{% load thumbnail %}
+
+{% block base_container %}
+    <div id="auto-reload" {% if proposal.accepted or proposal.ride.status == 'canceled' %}class="no-reload"{% endif %}>
+        <h2><i class="fa fa-car"></i> {{ profile.name }} {{ profile.age }}</h2>
+
+        <section style="margin-bottom: 20px;">
+            <div class="container">
+                {% if proposal.ride.status == 'canceled' %}
+                    <p>{% _ 'Sorry to say, but client cancelled order.' %}</p>
+
+                    <a href="{% url 'boober.open_rides_list' %}" class="btn mb20 btn-small btn-transparent-primary">Go
+                        {% _ 'back to order list' %}</a>
+                {% elif not proposal.accepted %}
+                    <p>
+                        {% _ 'Waiting for client to accept your proposal ...' %}
+                    </p>
+                    <a href="{% url 'boober.driver_proposal_cancel' pk=ride.pk proposal=proposal.pk %}"
+                       class="btn mb20 btn-small btn-transparent-primary">{% _ 'Cancel' %}</a>
+                {% else %}
+                    <div class="uou-block-7f proposal">
+                        <img src="{% thumbnail ride.client.own_photo 250x250 crop upscale %}" alt="" class="thumb"
+                             style="width: 250px;">
+
+                        <h2><i class="fa fa-female"></i> {{ ride.client.name }} {{ ride.client.age }}
+                            (oo {{ ride.client.boobs_size }})</h2>
+
+                        <form action="" method="post"{% if form.is_multipart %}
+                              enctype="multipart/form-data"{% endif %}>{% csrf_token %}
+                            {{ form.as_p }}
+
+                            <a href="{% url 'boober.driver_proposal_cancel' pk=ride.pk proposal=proposal.pk %}"
+                           class="btn mb20 btn-small btn-transparent-primary">{% _ 'Cancel' %}</a>
+                            <input type="submit" class="btn mb20 btn-lagre btn-primary" value="{{ "Pickup girl"|_ }} &raquo"/>
+                        </form>
+
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+
+    </div>
+{% endblock %}

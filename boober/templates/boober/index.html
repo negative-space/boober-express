@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load thumbnail %}
+
+
+{% block base_content %}
+
+    <style>
+        video {
+            width: 100%;
+            position: absolute;
+        }
+
+        .banr-head {
+            padding: 0;
+            background: black;
+
+{#             style="background: url(/images/ride.jpg) no-repeat; background-size: cover;"#}
+        }
+
+        .banr-head .text-area {
+            background: rgba(255, 255, 255 , 0.5);
+
+        }
+
+        .banr-head .container{
+            padding: 80px 0;
+        }
+    </style>
+    <div class="home-pro">
+        <!-- PRO BANNER HEAD -->
+        <div class="banr-head">
+
+            <video autoplay loop id="video-background" muted plays-inline>
+              <source src="/boobs.mov" type="video/mp4">
+            </video>
+            <div class="container">
+                <div class="row">
+
+                    <!-- CONTENT -->
+                    <div class="col-sm-7">
+                        <div class="text-area">
+                            <div class="position-center-center col-md-10">
+                                <h1>{% _ 'Show boobs - get free taxi!' %}</h1>
+                                <h6> {% _ 'The best way to get wherever you are going, without paying a cent. We created a unique app that will help to get a ride for free, just showing your boobs.' %}</h6>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4"
+                         style="display: flex; align-items: center; align-content: center; justify-content: space-around; flex-wrap: wrap; min-height: 200px;">
+                        <a href="{% url 'boober.client_start' %}" class="btn mb20 btn-large btn-primary">
+
+                            <i class="fa fa-female"></i>
+                            &nbsp;
+                            &nbsp;
+                            {% _ 'I have boobs' %} </a>
+                        <a href="{% url 'boober.driver_start' %}" class="btn mb20 btn-large btn-primary">
+
+                            <i class="fa fa-car"></i>
+                            &nbsp;
+                            &nbsp;
+                            {% _ 'I have a car' %}
+
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- SERVICES -->
+        <section class="services">
+
+            <!-- SERVICES ROW -->
+            <ul class="row" style="display: flex; flex-wrap: wrap;">
+
+                <!-- SECTION -->
+                <li class="col-md-4">
+                    <div class="ser-inn">
+                        <h4>{% _ 'Show boobs, get a ride' %}</h4>
+                        <p>{% _ 'Choose your destination and set you location. You will see a driver picture, with whom you will reach your final destination. If your friend is calling an boober for you, no matter who will pay, we accept any boobs you choose.' %}</p>
+                    </div>
+                </li>
+
+                <!-- SECTION -->
+                <li class="col-md-4">
+                    <div class="ser-inn">
+                        <h4>{% _ 'Always on, always available' %}</h4>
+                        <p>{% _ '24/7 request a ride any time on day. No need to worry about the money, when your boobs are always with you.' %}
+
+                        </p>
+                    </div>
+                </li>
+
+                <!-- SECTION  -->
+                <li class="col-md-4">
+                    <div class="ser-inn">
+                        <h4>{% _ 'We rate each other, we make it better' %}</h4>
+                        <p>{% _ 'Rate you driver and he will rate you back. We care about our services, and we want to make your ride comfortable, but we care about side also. Let’s make each other happy!' %}</p>
+                    </div>
+                </li>
+            </ul>
+        </section>
+
+    </div>
+
+{% endblock %}

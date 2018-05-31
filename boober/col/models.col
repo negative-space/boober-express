@@ -1,0 +1,178 @@
+%%
+%%
+from cratis_i18n.trans_utils import _
+%%
+
+#driver
+-----------
+user: one(cratis_profile.User -> drivers)
+date_created: create_time
+
+*=name
+*age: int
+*car_model
+*phone
+
+own_photo: image_file /Selfie
+car_photo: image_file
+
+location_lat
+location_lon
+
+@admin {
+    list: *
+}
+
+@rest {
+    auth(session)
+    fields: location_lat, location_lon [rw]
+    user_field: user
+}
+
+
+#client
+----------
+user: one(cratis_profile.User -> clients)
+date_created: create_time
+
+*=name
+*age: int
+*own_photo: image_file /Selfie
+*phone
+
+location_lat
+location_lon
+
+*boobs_size: int
+
+@admin
+
+
+#ride
+-------
+="{me.client} ({me.status})"
+date_created: create_time
+client: one(#client)
+driver: one(#driver)
+
+pickup_point_lat
+pickup_point_lon
+pickup_address: text(255)
+
+start_time: datetime
+
+status: text(?, choices: waiting_proposals, client_accepted, ride, canceled, done)
+
+pickup_time: datetime
+end_time: datetime
+
+paid: bool /I have seen the boobs
+
+selected_proposal: one(#proposal)
+
+@admin {
+    list: date_created, status
+}
+
+@rest {
+    auth(session)
+    query: filter(client__user=self.request.user)
+    fields: driver, status
+
+    inline:
+        driver(
+            fields: location_lat, location_lon
+        )
+}
+
+#ride_cancelation
+--------------------
+date_created: create_time
+ride: one2one(#ride -> cancelation)
+reason: longtext
+
+@post_save {
+instance.ride.status = 'canceled'
+instance.ride.save()
+}
+
+
+#proposal
+-----------
+date_created: create_time
+driver: one(#driver -> my_proposals)
+ride: one(#ride -> proposals)
+
+accepted: bool
+
+distance: int
+
+comment /Add notes that will be visible for client, or just say "Hello!"
+
+cancelled: bool
+
+@admin
+
+
+#driver_proposal_cancel
+------------------------
+date_created: create_time
+proposal: one(#proposal -> proposal_status)
+
+reason: longtext
+
+@post_save {
+instance.proposal.ride.status = 'waiting_proposals'
+instance.proposal.cancelled = True
+instance.proposal.save()
+instance.proposal.ride.save()
+}
+
+
+#proposal_accept
+--------------------
+date_created: create_time
+proposal: one(#proposal -> accept)
+*consent: bool /I confirm I am at least 18 years old, and I will need to show naked boobs to the driver after the ride.
+
+@post_save {
+instance.proposal.ride.status = 'client_accepted'
+instance.proposal.ride.selected_proposal = instance.proposal
+instance.proposal.ride.driver = instance.proposal.driver
+instance.proposal.ride.save()
+
+instance.proposal.accepted = True
+instance.proposal.save()
+}
+
+@admin
+
+
+#proposal_pickup
+--------------------
+date_created: create_time
+proposal: one(#proposal -> pickup)
+*consent: bool /I confirm I am at least 18 years old, and I'm not against to see naked boobs after the ride.
+
+@post_save {
+instance.proposal.ride.status = 'ride'
+instance.proposal.ride.save()
+}
+
+@admin
+
+
+
+#ride_feedback
+----------------
+date_created: create_time
+ride: one2one(#ride -> feedback)
+paid: bool  /I have seen the boobs!
+feedback: longtext /Write couple words to your client
+picture: image_file /Proof of successful payment (ask first, no face on picture!)
+
+@post_save {
+instance.ride.paid = instance.paid
+instance.ride.status = 'done'
+instance.ride.save()
+}

@@ -1,0 +1,14 @@
+
+{% extends 'boober/ride_base.html' %}
+
+{% block base_container %}
+<div>
+    <h2><i class="fa fa-female"></i> {{ ride.client.name }} {{ ride.client.age }}
+                            (oo {{ ride.client.boobs_size }}) -> {% _ 'Cancel proposal' %}</h2>
+
+    <form action="" method="post"{% if form.is_multipart %} enctype="multipart/form-data"{% endif %}>{% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="{{ 'Cancel proposal'|_ }}" class="btn btn-large btn-primary" />
+    </form>
+</div>
+{% endblock %}

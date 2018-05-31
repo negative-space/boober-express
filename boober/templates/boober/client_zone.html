@@ -1,0 +1,126 @@
+{% extends 'boober/user_base.html' %}
+
+{% load thumbnail %}
+
+{% block base_content %}
+
+    <div class="compny-profile">
+        <!-- SUB Banner -->
+        <div class="profile-bnr user-profile-bnr"
+             style="background: url(
+                     {% thumbnail profile.own_photo 1349x240 crop upscale as profile_banner %}{{ profile_banner.url }}); background-size: cover;">
+            <div class="container">
+                <div class="pull-left">
+                    <h2>{{ profile.name }}</h2>
+                    <h5>{% _ 'Boobing master' %}</h5>
+                </div>
+
+                <div class="right-top-bnr">
+                    <div class="connect"><a href="#." data-toggle="modal" data-target="#myModal"><i
+                            class="fa fa-user-plus"></i>{% _ 'Need boober' %}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Company Content -->
+        <div class="profile-company-content user-profile main-user" data-bg-color="f5f5f5">
+            <div class="container">
+                <div class="row">
+
+                    <!-- Tab Content -->
+                    <div class="col-md-12">
+                        <div class="tab-content">
+
+                            <!-- PROFILE -->
+                            <div id="profile" class="tab-pane fade in active">
+                                <div class="row">
+                                    <!-- Col -->
+                                    <div class="col-md-4">
+                                        <!-- Professional Details -->
+                                        <div class="sidebar">
+                                            <h5 class="main-title">{% _ 'Personal info' %}</h5>
+                                            <div class="sidebar-information">
+                                                {% thumbnail profile.own_photo 318x318 crop as profile_pic %}
+                                                <img class="media-object" src="{{ profile_pic.url }}" alt="">
+                                                <form action="" method="post"{% if form.is_multipart %}
+                                                      enctype="multipart/form-data"{% endif %}>{% csrf_token %}
+                                                    {{ form.as_p }}
+                                                    <input type="submit" value="Save"/>
+                                                </form>
+                                            </div>
+                                            {#                                            <div class="sidebar-information">#}
+                                            {#                                                <ul class="single-category">#}
+                                            {#                                                    <li class="row">#}
+                                            {#                                                        <h6 class="title col-xs-6">Name</h6>#}
+                                            {#                                                        <span class="subtitle col-xs-6">Abu Antar</span></li>#}
+                                            {#                                                    <li class="row">#}
+                                            {#                                                        <h6 class="title col-xs-6">Age</h6>#}
+                                            {#                                                        <span class="subtitle col-xs-6">38 Years Old</span></li>#}
+                                            {#                                                    <li class="row">#}
+                                            {#                                                        <h6 class="title col-xs-6">Location</h6>#}
+                                            {#                                                        <span class="subtitle col-xs-6">Jordan Amman</span></li>#}
+                                            {#                                                    <li class="row">#}
+                                            {#                                                        <h6 class="title col-xs-6">Experiance</h6>#}
+                                            {#                                                        <span class="subtitle col-xs-6">15 Years</span></li>#}
+                                            {#                                                    <li class="row">#}
+                                            {#                                                        <h6 class="title col-xs-6">Dgree</h6>#}
+                                            {#                                                        <span class="subtitle col-xs-6">MBA</span></li>#}
+                                            {#                                                    <li class="row">#}
+                                            {#                                                        <h6 class="title col-xs-6">Career Lavel</h6>#}
+                                            {#                                                        <span class="subtitle col-xs-6">Mid-Level</span></li>#}
+                                            {#                                                    <li class="row">#}
+                                            {#                                                        <h6 class="title col-xs-6">Phone</h6>#}
+                                            {#                                                        <span class="subtitle col-xs-6">(800) 123-4567</span></li>#}
+                                            {#                                                    <li class="row">#}
+                                            {#                                                        <h6 class="title col-xs-6">Fax </h6>#}
+                                            {#                                                        <span class="subtitle col-xs-6">(800) 123-4568</span></li>#}
+                                            {#                                                    <li class="row">#}
+                                            {#                                                        <h6 class="title col-xs-6">E-mail</h6>#}
+                                            {#                                                        <span class="subtitle col-xs-6"><a#}
+                                            {#                                                                href="#.">example@example.com</a></span></li>#}
+                                            {#                                                    <li class="row">#}
+                                            {#                                                        <h6 class="title col-xs-6">Website</h6>#}
+                                            {#                                                        <span class="subtitle col-xs-6"><a#}
+                                            {#                                                                href="#.">example.com </a></span></li>#}
+                                            {#                                                </ul>#}
+                                            {#                                            </div>#}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <!-- Skills -->
+                                        <div class="sidebar">
+                                            <h5 class="main-title">Last rides</h5>
+                                            <div class="job-skills">
+
+                                                {% for last_ride in last_rides %}
+                                                    <!-- Logo Design -->
+                                                    <ul class="row">
+                                                        <li class="col-sm-3">
+                                                            <h6><i class="fa fa-plus"></i> HTML5 and Css3</h6>
+                                                        </li>
+                                                        <li class="col-sm-9">
+                                                            <div class="progress">
+                                                                <div class="progress-bar" role="progressbar"
+                                                                     aria-valuenow="60" aria-valuemin="0"
+                                                                     aria-valuemax="100" style="width: 60%;"></div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                {% endfor %}
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

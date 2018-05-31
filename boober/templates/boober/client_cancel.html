@@ -1,0 +1,17 @@
+{% extends 'boober/ride_base.html' %}
+
+{% block base_container %}
+<div>
+    <h2>Cancel ride</h2>
+
+    <form action="" method="post"{% if form.is_multipart %} enctype="multipart/form-data"{% endif %}>{% csrf_token %}
+        {{ form.as_p }}
+
+        <a href="{% url 'boober.client_waiting' pk=ride.pk %}" class="btn mb20 btn-small btn-transparent-primary">
+            {% _ '&laquo; Back' %}
+        </a>
+
+        <input type="submit" value="{{ 'Cancel ride &raquo;'|_ }}" class="btn mb20 btn-large btn-primary" />
+    </form>
+</div>
+{% endblock %}

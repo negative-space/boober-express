@@ -1,0 +1,133 @@
+{% extends 'boober/ride_base.html' %}
+
+{% block base_container %}
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #map {
+            min-height: 400px;
+            width: 80%;
+            margin-bottom: 35px;
+        }
+    </style>
+
+    <div id="map-holder">
+        <h2><i class="fa fa-female"></i> {{ ride.client.name }} {{ ride.client.age }}
+                            (oo {{ ride.client.boobs_size }}) (tel: {{ ride.client.phone }})</h2>
+        <p>{{ ride.pickup_address }}</p>
+
+        <div id="map"></div>
+
+        <a href="{% url 'boober.driver_ride_feedback' pk=ride.pk %}" class="btn mb20 btn-lagre btn-transparent-primary">
+            {% _ 'Client delivered' %} <i class="fa fa-check-circle"></i>
+        </a>
+    </div>
+    <div id="auto-reload" {% if ride.status == 'canceled' %}class="no-reload"{% endif %}>
+        {% if ride.status == 'canceled' %}
+            <div id="sorry"></div>
+            <p>{% _ 'Sorry to say, but client cancelled order.' %}</p>
+
+            <a href="{% url 'boober.open_rides_list' %}" class="btn mb20 btn-small btn-transparent-primary">
+                {% _ 'Go back to order list' %}</a>
+        {% endif %}
+    </div>
+
+    {% csrf_token %}
+{% endblock %}
+
+
+{% block extra_script %}
+    <script>
+
+        function initMap() {
+            var map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: {{ ride.pickup_point_lat }}, lng: {{ ride.pickup_point_lon }}},
+                zoom: 15
+            });
+
+            var image = {
+                url: '/images/boob.svg',
+                {#size: new google.maps.Size(50, 50)#}
+                scaledSize: new google.maps.Size(50, 50)
+            }
+
+            var marker = new google.maps.Marker({
+                map: map,
+                dragable: true,
+                icon: image,
+                animation: google.maps.Animation.DROP,
+                anchorPoint: new google.maps.Point(0, 0)
+            });
+
+            var newPoint = new google.maps.LatLng({{ ride.pickup_point_lat }}, {{ ride.pickup_point_lon }});
+
+            marker.setPosition(newPoint);
+
+        }
+
+
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        if (navigator.geolocation) {
+
+            var watchedPosition = navigator.geolocation.watchPosition(function (position) {
+
+                $.ajaxSetup({
+                    headers: {"X-CSRFToken": getCookie("csrftoken")}
+                });
+
+                $.ajax({
+                    type: "PUT",
+                    url: '/en/api/boober/driver/{{ ride.selected_proposal.driver.pk }}/',
+                    data: {
+                        "location_lat": position.coords.latitude,
+                        "location_lon": position.coords.longitude
+                    },
+                    success: function () {
+                        console.log('lalala');
+                    },
+                    dataType: 'json'
+                });
+
+                console.log('Position is:', position);
+            }, function () {
+                console.log('Error detecting positions');
+            });
+        } else {
+            console.log('location is not supported!');
+        }
+
+        var sorry = setInterval(function () {
+            if(document.getElementById('sorry')){
+                console.log('sorry');
+                navigator.geolocation.clearWatch(watchedPosition);
+                document.getElementById('map-holder').innerHTML = '';
+
+                clearInterval(sorry);
+
+            }
+        }, 2000);
+
+
+    </script>
+
+
+
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyCYsyCtrprmQ43dsihT7ShSaGUCh-RTLrU&callback=initMap"
+            type="text/javascript"></script>
+{% endblock %}

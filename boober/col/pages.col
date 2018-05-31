@@ -1,0 +1,165 @@
+from boober.models import Driver, Ride, Client
+from cratis_i18n.trans_utils import _
+%%
+
+[base]
+@menu.main {
+    index => "Home": page(index) icon="home"
+    client => "Ride": page(client_start)
+    driver => "Drive": page(driver_start)
+}
+
+[base->index: $/]
+
+[base->thankyou: $/thankyou/]
+
+[base->driver_thankyou: $/driver_thankyou/<ride>/]
+ride: #ride.get(pk=url.ride)
+
+[base->user_base]
+@auth
+
+[user_base->driver_zone: $/driver/]
+profile: Driver.objects.get_or_create(user=request.user)[0]
+
+@crud_edit {
+    #driver<user=request.user>
+    fields: *, ^user, ^date_created, ^location_lat, ^location_lon
+    object_expr: data.profile
+}
+
+
+[user_base->driver_start: $/driver/start]
+profile: Driver.objects.get_or_create(user=request.user)[0]
+
+@crud_edit {
+    #driver<user=request.user>
+    fields: *, ^user, ^date_created, ^location_lat, ^location_lon
+    block: base_container
+    object_expr: data.profile
+    => 'boober.open_rides_list'
+}
+
+[user_base->ride_base]
+ride: Ride.objects.get(pk=url.pk) @or_404
+
+
+[user_base->open_rides_list: $/driver/orders/]
+rides: Ride.objects.filter(status='waiting_proposals')
+profile: Driver.objects.get_or_create(user=request.user)[0]
+
+
+[ride_base->ride_detail: $/driver/order/<pk>]
+driver: Driver.objects.get(user=request.user)
+
+@crud_create<<
+    #proposal<driver=data.driver, ride=data.ride>
+    fields: comment
+    block: base_container
+    => 'boober.driver_waiting', kwargs={'pk': url.pk, 'proposal': self.object.pk}
+>>
+
+
+[ride_base->driver_waiting: $/driver/order/<pk>/wait/<proposal>/]
+driver: Driver.objects.get(user=request.user)
+profile: Driver.objects.get_or_create(user=request.user)[0]
+
+ride: #ride.get(pk=url.pk)
+proposal: #proposal.get(pk=url.proposal)
+
+@crud_create<<
+    #proposal_pickup<proposal=data.proposal>
+    fields: consent
+    block: base_container
+    => 'boober.driver_ride', kwargs={'pk': url.pk}
+>>
+
+[ride_base->driver_ride: $/driver/order/<pk>/ride/]
+ride: #ride.get(pk=url.pk)
+
+[ride_base->driver_ride_feedback: $/driver/order/<pk>/feedback/]
+ride: #ride.get(pk=url.pk)
+
+@crud_create<<
+    #ride_feedback<ride=data.ride>
+    fields: feedback, paid, picture
+    block: base_container
+    => 'boober.driver_thankyou', kwargs={'ride': data.ride.pk }
+>>
+
+
+[ride_base->driver_proposal_cancel: $/driver/order/<pk>/cancel/<proposal>/]
+proposal: #proposal.get(pk=url.proposal) @or_404
+@crud_create<<
+    #driver_proposal_cancel<proposal=data.proposal>
+    fields: reason
+    block: base_container
+    => 'boober.open_rides_list'
+>>
+
+
+[user_base->client_zone: $/profile/]
+profile: Client.objects.get_or_create(user=request.user)[0]
+last_rides: Ride.objects.filter(client=profile)[:10]
+
+@crud_edit {
+    #client<user=request.user>
+    fields: *, ^user, ^date_created, ^location_lat, ^location_lon
+    block: dashboard_content
+    object_expr: data.profile
+}
+
+[user_base->client_start: $/girl/start]
+profile: Client.objects.get_or_create(user=request.user)[0]
+
+@crud_edit {
+    #client<user=request.user>
+    fields: *, ^user, ^date_created, ^location_lat, ^location_lon
+    block: base_container
+    object_expr: data.profile
+    => 'boober.client_ordering'
+}
+
+[user_base->client_ordering: $/profile/new/order/]
+profile: Client.objects.get(user=request.user)
+
+@crud_create<<
+    #ride<client=data.profile,status='waiting_proposals'>
+    fields: pickup_address, pickup_point_lat, pickup_point_lon
+    block: base_container
+    => 'boober.client_waiting', kwargs={'pk': self.object.pk}
+>>
+
+[ride_base->client_waiting: $/boobing/<pk>]
+profile: Client.objects.get(user=request.user)
+proposals: data.ride.proposals.filter(cancelled=False)
+
+[user_base->client_proposal_accept: $/boobing/<pk>/accept/<proposal>]
+profile: Client.objects.get(user=request.user)
+proposal: #proposal.get(pk=url.proposal)
+ride: proposal.ride
+
+@crud_create<<
+    #proposal_accept<proposal=data.proposal>
+    fields: consent
+    block: base_container
+    => 'boober.ride_waiting', kwargs={'pk': url.pk, 'proposal': url.proposal}
+>>
+
+
+[ride_base->client_cancel: $/boobing/<pk>/cancel]
+@crud_create<<
+    #ride_cancelation<ride=data.ride>
+    fields: reason
+    block: base_container
+    => 'boober.client_start'
+>>
+
+[ride_base->ride_waiting: $/boobing/<pk>/wait/<proposal>]
+proposal: #proposal.get(pk=url.proposal)
+
+
+[ride_base->proposed_drivers: $/boobing/<pk>/drivers/]
+
+
+

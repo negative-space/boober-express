@@ -1,0 +1,14 @@
+{% extends 'boober/ride_base.html' %}
+
+{% block base_container %}
+
+<div>
+    <h2><i class="fa fa-female"></i> {{ ride.client.name }} {{ ride.client.age }}
+                            (oo {{ ride.client.boobs_size }}) -> {{ 'Well done!'|_ }}</h2>
+
+    <form action="" method="post"{% if form.is_multipart %} enctype="multipart/form-data"{% endif %}>{% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" class="btn mb20 btn-lagre btn-primary" value="{{ 'Go ahead'|_ }} &raquo;"/>
+    </form>
+</div>
+{% endblock %}
